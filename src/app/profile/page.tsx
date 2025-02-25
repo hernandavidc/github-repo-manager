@@ -5,13 +5,19 @@ import { useEffect, useState } from "react";
 
 export default function Profile() {
   const { data: session } = useSession();
+  const [username, setUsername] = useState("");
+  const [profileUrl, setProfileUrl] = useState("");
   const [repos, setRepos] = useState([]);
 
   useEffect(() => {
     if (session?.user.githubId) {
       fetch("/api/github/repos")
         .then(res => res.json())
-        .then(data => setRepos(!data.message ? data : []));
+        .then(data => {
+            setRepos(!data.message ? data.repositories : [])
+            setUsername(data?.username);
+            setProfileUrl(data?.profileUrl);
+        });
     }
   }, [session]);
 
@@ -32,6 +38,15 @@ export default function Profile() {
             >
                 Connect to GitHub
             </button>
+        )}
+
+        {username && (
+            <p className="mt-10 text-lg">
+                GitHub User:{" "}
+                <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                    {username}
+                </a>
+            </p>
         )}
 
         {session.user?.githubId && (

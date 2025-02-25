@@ -22,6 +22,8 @@ export async function GET() {
     const query = `
         query {
             viewer {
+                login
+                url
                 repositories(first: 100) {
                     nodes {
                         id
@@ -49,6 +51,10 @@ export async function GET() {
     }
 
     const data = await response.json();
-    console.log(JSON.stringify(data, null, 2));
-    return NextResponse.json(data.data.viewer.repositories.nodes)
+
+    return NextResponse.json({
+        username: data.data.viewer.login,
+        profileUrl: data.data.viewer.url,
+        repositories: data.data.viewer.repositories.nodes,
+    })
 }
