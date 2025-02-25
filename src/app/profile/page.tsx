@@ -1,14 +1,8 @@
 "use client"
 
+import { Repo } from "@/types/repos";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
-
-interface Repo {
-    id: string;
-    name: string;
-    url: string;
-    stargazerCount: number;
-  }
 
 export default function Profile() {
   const { data: session } = useSession();
@@ -22,13 +16,17 @@ export default function Profile() {
 
   useEffect(() => {
     if (session?.user.githubId) {
-      fetch("/api/github/repos")
-        .then(res => res.json())
-        .then(data => {
-            setRepos(!data.message ? data.repositories : [])
-            setUsername(data?.username);
-            setProfileUrl(data?.profileUrl);
-        });
+        fetch("/api/github/repos")
+            .then(res => res.json())
+            .then(data => {
+                setRepos(!data.message ? data.repositories : [])
+                setUsername(data?.username);
+                setProfileUrl(data?.profileUrl);
+            });
+
+        fetch("/api/favorites")
+            .then(res => res.json())
+            .then(data => setFavorites(data.map((fav: { repoId: any; }) => fav.repoId)));
     }
   }, [session]);
 
@@ -72,7 +70,7 @@ export default function Profile() {
       
       await signIn("github", { callbackUrl: "/profile" });
     } catch (error) {
-      console.error("Error al conectar con GitHub:", error);
+      console.error("Error connecting to GitHub:", error);
     } finally {
       setIsConnecting(false);
     }
@@ -84,9 +82,14 @@ export default function Profile() {
     <div className="p-6 pt-40 max-w-md mx-auto">
         <h1 className="text-2xl">Welcome, {session.user?.name}</h1>
         <p className="mb-10">Email: {session.user?.email}</p>
-        <button onClick={() => signOut({ callbackUrl: "/login" })} className="bg-red-500 text-white p-2 rounded">
-            Logout
-        </button>
+        <div className="mt-4 flex flex-row gap-2">
+            <a href="/favorites" className="bg-blue-500 text-white p-2 rounded text-center">
+                View Favorites
+            </a>
+            <button onClick={() => signOut({ callbackUrl: "/login" })} className="bg-red-500 text-white p-2 rounded">
+                Logout
+            </button>
+        </div>
 
         {!session.user?.githubId && (
             <button

@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const { email } = await req.json();
     
     if (!email) {
-      return NextResponse.json({ error: 'Email requerido' }, { status: 400 });
+      return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
     
     // Guardar el email en una cookie
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error al preparar la conexión con GitHub:', error);
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+    console.error('Error while preparing the connection to GitHub:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
