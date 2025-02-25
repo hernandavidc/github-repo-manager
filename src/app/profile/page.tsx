@@ -8,6 +8,8 @@ export default function Profile() {
   const [username, setUsername] = useState("");
   const [profileUrl, setProfileUrl] = useState("");
   const [repos, setRepos] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filteredRepos, setFilteredRepos] = useState([]);
 
   useEffect(() => {
     if (session?.user.githubId) {
@@ -20,6 +22,10 @@ export default function Profile() {
         });
     }
   }, [session]);
+
+  useEffect(() => {
+    setFilteredRepos(repos.filter(repo => repo.name.toLowerCase().includes(search.toLowerCase())));
+  }, [search, repos]);
 
   if (!session) return <p className="text-center">Not authenticated</p>
 
@@ -52,12 +58,20 @@ export default function Profile() {
         {session.user?.githubId && (
             <div className="mt-6">
                 <h2 className="text-xl font-bold">Your Repositories</h2>
+                <input
+                    type="text"
+                    placeholder="Search repositories..."
+                    className="w-full p-2 border rounded my-4 text-black"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
                 <ul className="mt-2">
-                    {repos.map(repo => (
-                        <li key={repo.id} className="border-b py-2">
-                        <a href={repo.url} target="_blank" className="text-blue-500">{repo.name}</a> ⭐ {repo.stargazerCount}
-                        </li>
-                    ))}
+                {filteredRepos.map(repo => (
+                    <li key={repo.id} className="border-b py-2 flex justify-between">
+                        <a href={repo.url} target="_blank" className="text-blue-500">{repo.name}</a>
+                        <span>⭐ {repo.stargazerCount}</span>
+                    </li>
+                ))}
                 </ul>
             </div>
         )}
