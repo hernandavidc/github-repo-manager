@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GitHub Repo Manager
 
-## Getting Started
+## 🚀 Project Overview
 
-First, run the development server:
+GitHub Repo Manager is a Next.js-based web application that allows users to manage their favs GitHub repositories. The app includes authentication, repository listing, favorites management, and searching functionalities. It supports OAuth authentication with GitHub and also allows users to sign up with email and password.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📌 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **User Authentication**: Sign up with email and password or log in with GitHub.
+- **GitHub Repository Management**: Fetch and display repositories from a user's GitHub account.
+- **Favorite Repositories**: Mark repositories as favorites and store them in a database.
+- **Search Functionality**: Search by name through repositories.
+- **Next.js SSR**: The application uses server-side rendering (SSR) for better performance.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Steps to Install and Run
 
-## Learn More
+1. **Install Dependencies**
 
-To learn more about Next.js, take a look at the following resources:
+   ```sh
+   npm install  
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   or
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```sh
+   yarn install
+   ```
 
-## Deploy on Vercel
+2. **Configure Environment Variables** Create a `.env.local` file in the root directory and add the following variables:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```env
+   DATABASE_URL="file:./db.sqlite"
+   NEXTAUTH_URL="http://localhost:3000"
+   GITHUB_CLIENT_ID="your-github-client-id"
+   GITHUB_CLIENT_SECRET="your-github-client-secret"
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Set Up Database**
+
+   ```sh
+   npx prisma migrate dev --name init
+   ```
+
+4. **Run the Application**
+
+   ```sh
+   npm run dev
+   ```
+
+   or
+
+   ```sh
+   yarn dev
+   ```
+
+   The app will be available at `http://localhost:3000`
+
+## 🏗 Tech Stack
+
+- **Frontend**: Next.js, React, TailwindCSS
+- **Backend**: Next.js API routes, Prisma, SQLite
+- **Authentication**: NextAuth.js with GitHub OAuth and email/password login
+- **API**: GitHub GraphQL API v4
+
+## 📢 Contact
+
+For any questions or contributions, feel free to connect: [**Hernan David Alvarez Caballero**](https://www.linkedin.com/in/hernan-david-alvarez-caballero)
+
