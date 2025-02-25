@@ -3,6 +3,7 @@
 import { Repo } from "@/types/repos";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export default function Profile() {
   const { data: session } = useSession();
@@ -11,7 +12,7 @@ export default function Profile() {
   const [repos, setRepos] = useState<Repo[]>([]);
   const [search, setSearch] = useState("");
   const [filteredRepos, setFilteredRepos] = useState<Repo[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const { favorites, toggleFavorite } = useFavorites();
   const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
@@ -23,34 +24,12 @@ export default function Profile() {
                 setUsername(data?.username);
                 setProfileUrl(data?.profileUrl);
             });
-
-        fetch("/api/favorites")
-            .then(res => res.json())
-            .then(data => setFavorites(data.map((fav: { repoId: any; }) => fav.repoId)));
     }
   }, [session]);
 
   useEffect(() => {
     setFilteredRepos(repos.filter(repo => repo.name.toLowerCase().includes(search.toLowerCase())));
   }, [search, repos]);
-
-  const toggleFavorite = async (repoId: string, repoName: string, repoUrl: string) => {
-    if (favorites.includes(repoId)) {
-      await fetch("/api/favorites", {
-        method: "DELETE",
-        body: JSON.stringify({ repoId }),
-        headers: { "Content-Type": "application/json" },
-      });
-      setFavorites(favorites.filter(id => id !== repoId));
-    } else {
-      await fetch("/api/favorites", {
-        method: "POST",
-        body: JSON.stringify({ repoId, repoName, repoUrl }),
-        headers: { "Content-Type": "application/json" },
-      });
-      setFavorites([...favorites, repoId]);
-    }
-  };
 
   const handleGitHubConnect = async () => {
     if (!session?.user?.email) return;
@@ -124,17 +103,18 @@ export default function Profile() {
                     onChange={(e) => setSearch(e.target.value)}
                 />
                 <ul className="mt-2">
-                {filteredRepos.map(repo => (
-                    <li key={repo.id} className="border-b py-2 flex justify-between">
+                {filteredRepos.map(repo => {
+                    const isFavorite = favorites.some(fav => fav.repoId === repo.id);
+                    return (<li key={repo.id} className="border-b py-2 flex justify-between">
                         <div>
                             <a href={repo.url} target="_blank" className="text-blue-500">{repo.name}</a>
                             <span className="ml-2">⭐ {repo.stargazerCount}</span>
                         </div>
                         <button onClick={() => toggleFavorite(repo.id, repo.name, repo.url)} className="text-gray-500 hover:text-red-500">
-                            {favorites.includes(repo.id) ? "❤️" : "🤍"}
+                            {isFavorite ? "❤️" : "🤍"}
                         </button>
-                  </li>
-                ))}
+                  </li>)
+                })}
                 </ul>
             </div>
         )}

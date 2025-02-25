@@ -1,20 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
-import { RepoFav } from "@/types/repos";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export default function Favorites() {
   const { data: session } = useSession();
-  const [favorites, setFavorites] = useState<RepoFav[]>([]);
-
-  useEffect(() => {
-    if (session) {
-      fetch("/api/favorites")
-        .then(res => res.json())
-        .then(data => setFavorites(data));
-    }
-  }, [session]);
+  const { favorites, toggleFavorite } = useFavorites();
 
   if (!session) return <p className="text-center">Not authenticated</p>;
 
@@ -36,7 +27,9 @@ export default function Favorites() {
             {favorites.map(repo => (
                 <li key={repo.repoId} className="border-b py-2 flex justify-between">
                     <a href={repo.repoUrl} target="_blank" className="text-blue-500">{repo.repoName}</a>
-                    <span className="text-gray-400">⭐</span>
+                    <button onClick={() => toggleFavorite(repo.repoId, repo.repoName, repo.repoUrl)} className="text-gray-500 hover:text-red-500">
+                        ❤️
+                    </button>
                 </li>
             ))}
             </ul>
