@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-const authOptions = {
+export const authOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -44,12 +44,15 @@ const authOptions = {
                 session.user.id = token.userId;
                 session.accessToken = token.accessToken;
             }
-            session.user.githubId = token.githubId
+            session.user.githubId = token.githubId;
+            session.user.accessToken = token.accessToken;
             return session;
         },
         async jwt({ token, user, account }: any) {
             if (user) token.id = user.id;
             if (account?.provider === "github") {
+                token.accessToken = account.access_token;
+
                 const existingUser = await prisma.user.findFirst({
                     where: { email: token.email }
                 });
